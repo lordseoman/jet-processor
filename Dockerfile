@@ -12,7 +12,7 @@ ARG REALM
 ENV http_proxy ${HTTP_PROXY:-}
 ENV https_proxy ${HTTPS_PROXY:-}
 
-COPY etc/jessie.debian.list /etc/apt/sources.list
+COPY conf/jessie.sources.list /etc/apt/sources.list
 COPY skel/root/ /root/
 
 # Install base libraries and fix locale
