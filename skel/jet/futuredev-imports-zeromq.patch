@@ -1,0 +1,17 @@
+=== modified file 'bin/datastore/modules/generic/importers.py'
+--- bin/datastore/modules/generic/importers.py	2015-08-20 03:49:27 +0000
++++ bin/datastore/modules/generic/importers.py	2017-04-07 22:38:02 +0000
+@@ -88,12 +88,7 @@
+             usagedefns_collector.target_exists_action as target_exists_action,
+             usagedefns_collector.strip_header as strip_header,
+             usagedefns_collector.strip_trailer as strip_trailer,
+-            usagedefns_collector.archive_group AS archive_group,
+             usagedefns_collector.archive_prefix as archive_prefix,
+-            usagedefns_collector.archive_delay_days as archive_delay_days,
+-            usagedefns_collector.archive_expire_days as archive_expire_days,
+-            usagedefns_collector.backup_target_session_id AS backup_target_session_id,
+-            usagedefns_collector.backup_delay_files AS backup_delay_files,
+             usagedefns_collector.filename_mask as filename_mask,
+             usagedefns_collector.filename_prefix as filename_prefix,
+             usagedefns_collector.filename_extension as filename_extension
+
