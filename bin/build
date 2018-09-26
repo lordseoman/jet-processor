@@ -1,0 +1,16 @@
+#!/bin/bash
+#######################################################
+#
+# Called to build a docker container
+#
+# $> git clone jet-processor
+# $> git branch <client>
+ 
+# ./bin/build <module> <verno>
+# or
+# ./bin/build 
+#
+#######################################################
+
+CLIENT=$1
+MODULE
