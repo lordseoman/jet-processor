@@ -7,7 +7,8 @@ ENV DEBIAN_FRONTEND noninteractive
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 ARG TIMEZONE
-ARG REALM
+ARG CLIENT
+ARG DF_PORTS
 
 ENV http_proxy ${HTTP_PROXY:-}
 ENV https_proxy ${HTTPS_PROXY:-}
@@ -15,10 +16,13 @@ ENV https_proxy ${HTTPS_PROXY:-}
 COPY conf/jessie.sources.list /etc/apt/sources.list
 COPY skel/root/ /root/
 
+# For some reason this directory does not exist and the next run breaks
+RUN mkdir /var/cache/apt/archives
+
 # Install base libraries and fix locale
 RUN apt-get clean \
   && apt-get update \
-  && apt-get install --yes apt-utils vim less vim htop wget unzip curl locales net-tools screen tcpdump \
+  && apt-get install --yes apt-utils vim less vim htop wget unzip curl locales net-tools screen tcpdump strace \
   && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
   && ln -s /etc/locale.alias /usr/share/locale/locale.alias \
   && /usr/sbin/locale-gen en_US.UTF-8 \
@@ -44,7 +48,7 @@ RUN apt-get install --yes --no-install-recommends apt-transport-https ca-certifi
   && mkdir -p /var/log/supervisor \
   && mkdir -p /etc/supervisor/conf.d
 
-COPY clients/$REALM/supervisor.conf /etc/supervisor/conf.d/
+COPY conf/supervisor.conf.d/ /etc/supervisor/conf.d/
 COPY conf/supervisord.conf /etc/
 
 # Install ZMQ
@@ -111,7 +115,7 @@ RUN apt-get install --yes --no-install-recommends libtool pkg-config build-essen
   && pip install /usr/src/eggs/WebTest-1.1.tar.gz \
   && pip install /usr/src/eggs/wsgiref-0.1.2.zip \
   && pip install /usr/src/eggs/Pylons-0.9.7rc2.tar.gz \
-  && pip install requests netaddr unittest2 watchdog \
+  && pip install requests requests_toolbelt netaddr unittest2 watchdog \
   && pip install /usr/src/eggs/Jet-3.0.0-rc24.tar.gz \
   && apt-get remove --yes build-essential gcc make \
   && apt-get autoremove --yes
@@ -131,8 +135,8 @@ WORKDIR $HOME
 
 STOPSIGNAL SIGTERM
 
-VOLUME ["/opt/Usage", "/opt/Archive", "/opt/Reports", "/opt/work"]
-EXPOSE 12210
+VOLUME ["/opt/Usage", "/opt/Archive", "/opt/Reports", "/opt/ramdisk"]
+EXPOSE $DF_PORTS
 
 CMD ["start"]
 

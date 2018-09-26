@@ -1,0 +1,10 @@
+#!/bin/bash
+
+VOLUMES='-v /mnt/Reports:/opt/Reports -v /mnt/Usage:/opt/Usage -v /mnt/Archive:/opt/Archive -v /mnt/ramdisk:/opt/ramdisk'
+
+DF_PORTS=''
+PORTS=''
+for x in {12510..12650..10}; do
+    PORTS="${PORTS} -p ${IP}:${x}:${x}"
+    DF_PORTS="${DF_PORTS} ${x}"
+done

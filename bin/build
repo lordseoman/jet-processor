@@ -12,5 +12,49 @@
 #
 #######################################################
 
-CLIENT=$1
-MODULE
+builddir=$HOME/.docker-build
+cfgfile=${builddir}/.build.cfg
+
+if [ ! -e ${builddir} ]; then
+    mkdir ${builddir}
+fi
+
+if [ -e ${cfgfile} ]; then
+    source ${cfgfile}
+    if [ "$#" -eq 1 ]; then
+        echo "Updating version $VERSION to $1"
+        VERSION=$1
+        echo -e "MODULE=$MODULE\nCLIENT=$CLIENT\nVERSION=$VERSION\n" > ${cfgfile}
+    fi
+elif [ "$#" -ne 3 ]; then
+    echo "Call using $0 <client> <module> <version>"
+else
+    CLIENT=$1
+    MODULE=$2
+    VERSION=$3
+    echo -e "MODULE=$MODULE\nCLIENT=$CLIENT\nVERSION=$VERSION\n" > ${cfgfile}
+fi
+
+echo -e "Build variables:\n   o Client: $CLIENT\n   o ModuleName: $MODULE\n   o Version: $VERSION"
+
+source conf/docker/defaults
+if [ -e conf/docker/$CLIENT ]; then
+    source conf/docker/$CLIENT
+fi
+source conf/docker/$MODULE
+if [ -e conf/docker/$MACHINE ]; then
+    source conf/docker/$MACHINE
+fi
+
+echo -e "   o IP: $IP\n   o Machine: $MACHINE\n   o FQDN: $FQDN\n   o Timezone: $TIMEZONE"
+
+SCRIPTARGS=(--build-arg DF_PORTS="$DF_PORTS")
+
+ARGS="--build-arg CLIENT=$CLIENT --build-arg TIMEZONE=$TIMEZONE"
+PROXY="--build-arg HTTP_PROXY=${HTTP_PROXY} --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
+
+CMD="docker build --rm -t jet-$MODULE:latest -t jet-$MODULE:$VERSION ${ARGS} ${PROXY}"
+
+#echo $CMD "${SCRIPTARGS[@]}" .
+exec $CMD "${SCRIPTARGS[@]}" .
+

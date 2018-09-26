@@ -1,9 +1,9 @@
 #!/bin/bash
 #######################################################
 #
-# Run a built docker container
+# Enter a built docker container
 #
-# ./bin/run
+# ./bin/enter <user>
 #
 #######################################################
 
@@ -25,13 +25,6 @@ source conf/docker/defaults
 source conf/docker/$CLIENT
 source conf/docker/$MODULE
 
-docker run -d \
-    -it \
-    --name jet-$MODULE \
-    --user jet \
-    --net=host \
-    --restart=unless-stopped \
-    $VOLUMES \
-    $PORTS \
-    jet-$MODULE:latest
+USER=$1
 
+docker exec -it --user ${USER:-root} jet-$MODULE /bin/bash

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+HTTP_PROXY=http://10.201.16.115:8080/
+HTTPS_PROXY=https://10.201.16.115:8080/
+
+IP=`hostname -i`
+MACHINE=`hostname -s`
+FQDN=`hostname -f`
+
+TIMEZONE='Australia/Melbourne'
+
