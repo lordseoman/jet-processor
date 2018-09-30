@@ -50,9 +50,6 @@ RUN apt-get install --yes --no-install-recommends apt-transport-https ca-certifi
   && mkdir -p /var/log/supervisor \
   && mkdir -p /etc/supervisor/conf.d
 
-COPY conf/supervisor.conf.d/ /etc/supervisor/conf.d/
-COPY conf/supervisord.conf /etc/
-
 # Install ZMQ
 RUN apt-get update && apt-get install --yes --no-install-recommends \
     libtool pkg-config build-essential autoconf automake uuid-dev \
@@ -138,6 +135,7 @@ RUN echo "export MODULE=${MODULE}" > $JETHOME/cfg/build-args \
   && echo "export VERSION=${VERSION}" >> $JETHOME/cfg/build-args \
   && chown -R jet:jet $JETHOME \
   && chmod 755 $JETHOME/bin/*
+
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

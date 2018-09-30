@@ -20,6 +20,11 @@ if [ ! -e ${builddir} ]; then
 fi
 
 if [ -e ${cfgfile} ]; then
+    if [ "$#" -eq 1 -a "$1" == "clean" ]; then
+        rm ${cfgfile}
+        echo "Existing build file removed."
+        exit 0
+    fi
     source ${cfgfile}
     if [ "$#" -eq 1 ]; then
         echo "Updating version $VERSION to $1"
@@ -50,7 +55,7 @@ echo -e "   o IP: $IP\n   o Machine: $MACHINE\n   o FQDN: $FQDN\n   o Timezone: 
 
 SCRIPTARGS=(--build-arg DF_PORTS="$DF_PORTS")
 
-ARGS="--build-arg CLIENT=$CLIENT --build-arg TIMEZONE=$TIMEZONE"
+ARGS="--build-arg CLIENT=$CLIENT --build-arg TIMEZONE=$TIMEZONE --build-arg MODULE=$MODULE --build-arg VERSION=$VERSION"
 PROXY="--build-arg HTTP_PROXY=${HTTP_PROXY} --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
 
 CMD="docker build --rm -t jet-$MODULE:latest -t jet-$MODULE:$VERSION ${ARGS} ${PROXY}"

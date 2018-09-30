@@ -22,7 +22,9 @@ fi
 
 source ${cfgfile}
 source conf/docker/defaults
-source conf/docker/$CLIENT
+if [ -e conf/docker/$CLIENT ]; then
+    source conf/docker/$CLIENT
+fi
 source conf/docker/$MODULE
 
 USER=$1
