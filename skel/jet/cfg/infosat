@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# This is the Jet code branch to be checked out.
+export BRANCH='devel'
+
+# The realm is the database we connect to.
+export REALM='infosat'
+

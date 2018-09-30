@@ -1,6 +1,15 @@
 #!/bin/bash
+#############################################################
+#
+# This is a modified version to work with Infosats migration
+#
+#############################################################
 
 echo "Doing first time setup..\n"
+
+source cfg/defaults
+source cfg/build-args
+source cfg/$CLIENT
 
 echo -n "Enter your Fullname: "
 read FULLNAME
@@ -10,24 +19,25 @@ echo -n "Enter your email address: "
 read EMAIL
 
 bzr whoami "${FULLNAME} <${EMAIL}>"
-bzr obs-login $USERNAME
 
 cd
 cd .bazaar/plugins/
 bzr branch bzr+ssh://${USERNAME}@svn.obsidian.com.au/home/bzr/.plugins/obsidian/
 cd
 
-echo -n "Enter the client repository: "
-read CLIENT
-echo -n "Enter the branch [central]: "
-read BRANCH
+bzr obs-branch --repo=bugfix futuredev futuredev-bugfix
+cd futuredev-bugfix
+bzr obs-login $USERNAME
+cd 
+bzr obs-branch --repo=${BRANCH} ${CLIENT} ${CLIENT}-${BRANCH}
+cd ${CLIENT}-${BRANCH}
+bzr obs-login $USERNAME
+cd
 
-bzr obs-branch --repo=${BRANCH:-devel} ${CLIENT} ${CLIENT}-${BRANCH:-devel}
-ln -sv ${CLIENT}-${BRANCH:-devel} Jet
+ln -sv futuredev-bugfix Jet
 cd Jet/etc
 ln -s ../local/etc/licence.key .
-ln -s ../local/etc/realm.cfg .
-ln -s ../local/etc/local.cfg .
+ln -s ../../${CLIENT}-${BRANCH}/local/etc/local.cfg .
 cd 
 
 if [ -e /opt/Reports ]; then
@@ -49,7 +59,9 @@ cd Jet/modules/pylonfe
 python setup.py egg_info
 cd
 
-mkdir Jet/var/log/supervisor
+if [ ! -e Jet/var/log/supervisor ]; then
+    mkdir Jet/var/log/supervisor
+fi
 touch Jet/var/log/supervisor/pylons.log
 touch Jet/var/log/supervisor/pylons.err
 touch Jet/var/log/supervisor/radius.log
@@ -58,4 +70,6 @@ touch Jet/var/log/supervisor/reportfe.log
 touch Jet/var/log/supervisor/reportfe.err
 touch Jet/var/log/supervisor/supervisord.log
 chown jet:jet -R Jet/var/log
+
+echo -e "BRANCH='futuredev-bugfix ${CLIENT}-${BRANCH}'\nMAIN='futuredev-bugfix'" > .jet.cfg
 

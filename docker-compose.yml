@@ -1,0 +1,14 @@
+version: "3"
+services:
+  filetracker:
+    image: jet-filetracker
+    ports: 
+      - "12610:12610"
+    networks:
+      - front-tier
+      - back-tier
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+

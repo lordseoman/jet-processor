@@ -118,7 +118,7 @@ RUN apt-get install --yes --no-install-recommends libtool pkg-config build-essen
   && pip install /usr/src/eggs/Jet-3.0.0-rc24.tar.gz \
   && apt-get remove --yes build-essential gcc make \
   && apt-get autoremove --yes
- 
+
 # Copy the Supervisor files here so they can be changed without rebuilding the above
 COPY conf/supervisor.conf.d/ /etc/supervisor/conf.d/
 COPY conf/supervisord.conf /etc/supervisor/

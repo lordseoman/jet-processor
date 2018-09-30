@@ -22,13 +22,16 @@ fi
 
 source ${cfgfile}
 source conf/docker/defaults
-source conf/docker/$CLIENT
+if [ -e conf/docker/$CLIENT ]; then
+    source conf/docker/$CLIENT
+fi
 source conf/docker/$MODULE
 
-docker run -d \
+echo "Follow any instructions on startup, end by using CTRL-p CTRL-q"
+
+docker run \
     -it \
     --name jet-$MODULE \
-    --user jet \
     --net=host \
     --restart=unless-stopped \
     $VOLUMES \
