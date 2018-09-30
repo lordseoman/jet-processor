@@ -8,6 +8,8 @@ ARG HTTP_PROXY
 ARG HTTPS_PROXY
 ARG TIMEZONE
 ARG CLIENT
+ARG MODULE
+ARG VERSION
 ARG DF_PORTS
 
 ENV http_proxy ${HTTP_PROXY:-}
@@ -44,7 +46,7 @@ RUN echo "\n\nexport http_proxy=$HTTP_PROXY\nexport https_proxy=$HTTPS_PROXY" >>
 # Install some things.
 RUN apt-get install --yes --no-install-recommends apt-transport-https ca-certificates \
   gnupg2 software-properties-common mysql-client-5.5 patch python python-setuptools \
-  python-dev supervisor \
+  python-dev supervisor sudo \
   && mkdir -p /var/log/supervisor \
   && mkdir -p /etc/supervisor/conf.d
 
@@ -115,23 +117,30 @@ RUN apt-get install --yes --no-install-recommends libtool pkg-config build-essen
   && pip install /usr/src/eggs/WebTest-1.1.tar.gz \
   && pip install /usr/src/eggs/wsgiref-0.1.2.zip \
   && pip install /usr/src/eggs/Pylons-0.9.7rc2.tar.gz \
-  && pip install requests requests_toolbelt netaddr unittest2 watchdog \
+  && pip install requests requests_toolbelt requests-oauthlib netaddr unittest2 watchdog \
   && pip install /usr/src/eggs/Jet-3.0.0-rc24.tar.gz \
   && apt-get remove --yes build-essential gcc make \
   && apt-get autoremove --yes
+ 
+# Copy the Supervisor files here so they can be changed without rebuilding the above
+COPY conf/supervisor.conf.d/ /etc/supervisor/conf.d/
+COPY conf/supervisord.conf /etc/supervisor/
+COPY conf/supervisor.defaults.conf /tmp/
+RUN cat /tmp/supervisor.defaults.conf >> /etc/default/supervisor && rm /tmp/supervisor.defaults.conf
 
 # Setup the jet homedir
-ENV HOME /home/jet
-RUN useradd --create-home --home-dir $HOME --shell /bin/bash --uid 1001 jet 
-COPY skel/jet/ $HOME/
-RUN chown -R jet:jet $HOME && chmod 755 $HOME/bin/*
-
+ENV JETHOME /home/jet
+RUN useradd --create-home --home-dir $JETHOME --shell /bin/bash --uid 1001 jet 
+COPY skel/jet/ $JETHOME/
+COPY conf/docker/defaults $JETHOME/cfg/
+RUN echo "export MODULE=${MODULE}" > $JETHOME/cfg/build-args \
+  && echo "export CLIENT=${CLIENT}" >> $JETHOME/cfg/build-args \
+  && echo "export VERSION=${VERSION}" >> $JETHOME/cfg/build-args \
+  && chown -R jet:jet $JETHOME \
+  && chmod 755 $JETHOME/bin/*
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
-USER jet
-WORKDIR $HOME
 
 STOPSIGNAL SIGTERM
 
@@ -139,4 +148,3 @@ VOLUME ["/opt/Usage", "/opt/Archive", "/opt/Reports", "/opt/ramdisk"]
 EXPOSE $DF_PORTS
 
 CMD ["start"]
-
