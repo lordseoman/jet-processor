@@ -24,9 +24,9 @@ RUN mkdir /var/cache/apt/archives
 # Install base libraries and fix locale
 RUN apt-get clean \
   && apt-get update \
-  && apt-get install --yes apt-utils vim less vim htop wget unzip curl locales net-tools screen tcpdump strace \
+  && apt-get install --yes apt-utils vim less htop wget unzip curl locales net-tools screen tcpdump strace \
   && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
-  && ln -s /etc/locale.alias /usr/share/locale/locale.alias \
+#  && ln -s /etc/locale.alias /usr/share/locale/locale.alias \
   && /usr/sbin/locale-gen en_US.UTF-8 \
   && dpkg-reconfigure -f noninteractive locales \
   && /usr/sbin/update-locale LANG=en_US.UTF-8
@@ -127,7 +127,7 @@ RUN cat /tmp/supervisor.defaults.conf >> /etc/default/supervisor && rm /tmp/supe
 
 # Setup the jet homedir
 ENV JETHOME /home/jet
-RUN useradd --create-home --home-dir $JETHOME --shell /bin/bash --uid 1001 jet 
+RUN useradd --create-home --home-dir $JETHOME --shell /bin/bash --uid 1000 jet 
 COPY skel/jet/ $JETHOME/
 COPY conf/docker/defaults $JETHOME/cfg/
 RUN echo "export MODULE=${MODULE}" > $JETHOME/cfg/build-args \

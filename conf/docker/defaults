@@ -1,7 +1,7 @@
 #!/bin/bash
 
-HTTP_PROXY=http://10.201.16.115:8080/
-HTTPS_PROXY=https://10.201.16.115:8080/
+HTTP_PROXY=
+HTTPS_PROXY=
 
 IP=`hostname -i`
 MACHINE=`hostname -s`

@@ -2,7 +2,9 @@
 
 source /home/jet/cfg/defaults
 source /home/jet/cfg/build-args
-source /home/jet/cfg/$CLIENT
+if [ -e /home/jet/cfg/$CLIENT ]; then
+    source /home/jet/cfg/$CLIENT
+fi
 
 if [ -e /var/run/supervisord.pid ]; then
     echo "Unsafe shutdown..."
@@ -13,6 +15,8 @@ if [ ! -e /home/jet/.jet.cf ]; then
     cd /home/jet
     sudo -u jet /home/jet/bin/setup-jet.sh
 fi
+
+echo "Commands: " $@
 
 service supervisor start
 exit 0
