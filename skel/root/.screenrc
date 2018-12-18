@@ -1,3 +1,6 @@
+# The default shell to use
+shell /bin/bash
+
 #Use scroll wheel
 # Scroll up
 bindkey -d "^[[5S" eval copy "stuff 5\025"
